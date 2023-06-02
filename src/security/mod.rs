@@ -6,11 +6,11 @@ struct Auth {
     token: String,
 }
 
-#[get("/auth")]
-pub fn first_time_auth() -> Json<MyStruct> {
+// #[get("/auth")]
+// pub fn first_time_auth() -> Json<MyStruct> {
 
-
+//     todo!();
     
 
-    Json(my_struct)
-}
+//     Json(my_struct)
+// }
