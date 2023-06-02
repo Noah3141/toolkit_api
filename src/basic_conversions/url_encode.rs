@@ -7,10 +7,10 @@ use {
 };
 
 #[get("/convert/urldecode/<req>")]
-pub fn first_time_auth(req: String) -> String {
+pub fn url_decode(req: String) -> String {
     let content = req;
     
-    
+
     let decoded = match decode(&content) {
         Ok(decoded) => decoded.into_owned(),
         Err(e) => e.utf8_error().to_string() 
