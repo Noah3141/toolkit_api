@@ -7,10 +7,9 @@ struct Auth {
 }
 
 #[get("/auth")]
-pub fn first_time_auth() -> Json<MyStruct> {
+pub fn first_time_auth() -> () {
 
     todo!();
     
 
-    Json(my_struct)
 }
