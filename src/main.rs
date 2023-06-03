@@ -1,3 +1,4 @@
+use rocket_dyn_templates::Template;
 use sea_orm::{DatabaseBackend, ConnectionTrait};
 
 
@@ -43,8 +44,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 
     let _rocket = rocket::build()
-        .manage(db)
-        .mount("/", routes![
+        .manage(db) // Send db as state to routes
+        .attach(Template::fairing()) // initialize template rendering using Rocket.toml
+        .mount("/", routes![ // Mount my handlers upon this base route for access
             url_decode,
             validate_email,
             word_in_db
