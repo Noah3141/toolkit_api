@@ -1,22 +1,53 @@
+use sea_orm::{DatabaseBackend, ConnectionTrait};
+
+
+
 #[macro_use] extern crate rocket; 
 
-pub mod basic_conversions;
-pub mod data_cleaning;
-pub mod email;
+pub mod routes;
 pub mod security;
 pub mod utils;
 
 use {
-    basic_conversions::{
-        url_encode::url_decode}, 
+    sea_orm::{
+        TransactionTrait, Statement,
+        Set, 
+        NotSet,
+        Database,
+        DatabaseConnection,
+        ActiveModelTrait},
+    dotenvy::dotenv,
+    routes::{
+        basic_conversions::{
+            url_decode::url_decode
+        },
+        email::{
+            validate_email::validate_email
+        },
+        russian::{
+            word_in_db::word_in_db
+        }
+    }   
 };
 
 #[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    
+    dotenv().expect(".env not found!");
+
+    let db: DatabaseConnection = match Database::connect(dotenvy::var("DATABASE_URL")?).await {
+        Ok(db) => db,
+        Err(e) => panic!("Error launching: {e}")
+    };
+
 
     let _rocket = rocket::build()
+        .manage(db)
         .mount("/", routes![
-            url_decode
+            url_decode,
+            validate_email,
+            word_in_db
         ])
         .launch()
         .await?;
