@@ -7,7 +7,7 @@ use {
     }
 };
 
-#[get("/email/validate/<req>")]
+#[get("/validate/<req>")]
 pub async fn validate_email(req: String) -> Json<CheckEmailOutput> {
     let email = req;
     let input = CheckEmailInput::new(email);

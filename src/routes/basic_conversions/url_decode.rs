@@ -3,7 +3,7 @@ use {
     urlencoding::decode
 };
 
-#[get("/convert/urldecode/<req>")]
+#[get("/urldecode/<req>")]
 pub async fn url_decode(req: String) -> String {
     let content = req;
 

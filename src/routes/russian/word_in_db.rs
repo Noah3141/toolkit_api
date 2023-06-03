@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use super::models::russian_words::*;
 
 
-#[get("/russian/in_check/<req>")]
+#[get("/in_check/<req>")]
 pub async fn word_in_db(db: &State<DatabaseConnection> , req: String) -> String {
     
     println!("requested string: {req}");
