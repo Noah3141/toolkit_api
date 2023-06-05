@@ -1,4 +1,6 @@
-#[macro_use] extern crate rocket; 
+#[macro_use]
+extern crate rocket;
+extern crate rocket_cors;
 
 pub mod routes;
 pub mod security;
@@ -6,21 +8,10 @@ pub mod utils;
 
 use {
     sea_orm::{
-        TransactionTrait, ConnectionTrait,
-        Statement,
-        Set, NotSet,
-        Database, DatabaseBackend, DatabaseConnection,
-        ActiveModelTrait
+        Database, DatabaseConnection,
     },
-    dotenvy::dotenv,
 
-    rocket_dyn_templates::{
-        Template,
-    },
     routes::{
-        pages::home::{
-            home_page
-        },
         basic_conversions::{
             url_decode::url_decode
         },
@@ -28,29 +19,32 @@ use {
             validate_email::validate_email
         },
         russian::{
-            word_in_db::word_in_db
+            word_in_db::word_in_db,
+            generate_vocab_list::generate_list
         }
     }   
 };
 
+
+
 #[rocket::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
 
     let db: DatabaseConnection = match Database::connect(dotenvy::var("DATABASE_URL")?).await {
         Ok(db) => db,
         Err(e) => panic!("Error launching: {e}")
     };
-
+    let cors = utils::cors::setup_cors();
 
     let _rocket = rocket::build()
         .manage(db) // Send db as state to routes
+        .attach(cors)
 
         // Mount my handlers upon this base route for access
-        .mount("/", routes![
-            home_page
-        ])
         .mount("/russian", routes![ 
-            word_in_db
+            word_in_db,
+            generate_list
         ])
         .mount("/email", routes![
             validate_email,
