@@ -2,6 +2,9 @@
 # Use a base image with the latest version of Rust installed
 FROM rust:latest
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 # Set the working directory in the container
 WORKDIR /app
 
