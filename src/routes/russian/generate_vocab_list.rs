@@ -3,33 +3,7 @@ pub mod verb_pairs;
 pub mod verb_trees;
 
 
-use std::collections::HashMap;
 
-use chrono::{NaiveDateTime, Utc};
-use rocket::{State, serde::json::Json, form::Form, http::Status};
-use sea_orm::prelude::{DateTimeLocal, ChronoDateTime};
-use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait, Set};
-use serde::{Deserialize, Serialize};
-use super::models::{prelude::*, unrecognized_words};
-use super::models::russian_words::{Column as RussianWordsColumn};
-use super::models::unrecognized_words::{Column as UnrecognizedWordsColumn};
-
-
-// INCOMING DATA
-#[derive(FromForm, Deserialize)]
-pub struct GenerateListRequest {
-    input: String,
-    breadth: String,
-    style: String,
-}
-
-
-
-// Internal struct used here to organize our processes, but isn't how data is sent to front-end
-pub struct InputLemmaStats {
-    form_lemma: HashMap<String, String>,
-    lemma_frequency: HashMap<String, u16>
-}
 
 /* 
 
