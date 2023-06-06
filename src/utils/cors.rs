@@ -33,6 +33,7 @@ pub fn setup_cors() -> Cors {
         "http://127.0.0.1:3000",
         "http://localhost:3000",
         "http://0.0.0.0:3000",
+        "https://rubit.vercel.app/"
     ]);
 
     let allowed_methods: AllowedMethods = ["Get", "Post", "Delete"]
