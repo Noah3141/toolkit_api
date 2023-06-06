@@ -2,6 +2,7 @@ use rocket::{State, serde::json::Json};
 use sea_orm::DatabaseConnection;
 use sea_orm::entity::prelude::*;
 use super::models::russian_words::*;
+use super::models::prelude::*;
 
 
 #[get("/in_check/<req>")]
@@ -11,7 +12,7 @@ pub async fn word_in_db(db: &State<DatabaseConnection> , req: String) -> String 
     // validate req as a word
     let word = req;
 
-    let result = Entity::find()
+    let result = RussianWords::find()
         .filter(Column::Form.contains(word))
         .one(db.inner())
         .await;

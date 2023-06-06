@@ -20,7 +20,11 @@ use {
         },
         russian::{
             word_in_db::word_in_db,
-            generate_vocab_list::generate_list
+            generate_vocab_list::{
+                raw_vocabulary::list_vocab,
+                verb_pairs::list_pairs,
+                verb_trees::list_trees,
+            }
         }
     }   
 };
@@ -44,7 +48,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Mount my handlers upon this base route for access
         .mount("/russian", routes![ 
             word_in_db,
-            generate_list
+            list_vocab,
+            list_pairs,
+            list_trees
         ])
         .mount("/email", routes![
             validate_email,
