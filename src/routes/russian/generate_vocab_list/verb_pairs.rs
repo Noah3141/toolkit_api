@@ -11,7 +11,7 @@ pub struct GenerateListRequest {
 
 #[derive(Serialize)]
 pub struct VerbPairList {
-    list_entry: Vec<VerbPairEntry>,
+    entry_list: Vec<VerbPairEntry>,
 }
 
 #[derive(Serialize)]

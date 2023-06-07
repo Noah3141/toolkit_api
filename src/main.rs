@@ -25,8 +25,13 @@ use {
                 verb_pairs::list_pairs,
                 verb_trees::list_trees,
             }
-        }
-    }   
+        },
+        data_cleaning::wordify::{
+            test,
+            delint,
+            wordify_text
+        }   
+    }
 };
 
 
@@ -46,7 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .attach(cors)
 
         // Mount my handlers upon this base route for access
-        .mount("/russian", routes![ 
+        .mount("/russian/", routes![ 
             word_in_db,
             list_vocab,
             list_pairs,
@@ -59,7 +64,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             url_decode,
         ])
         .mount("/clean", routes![
-
+            test,
+            delint,
+            wordify_text,
         ])
         .launch()
         .await?;

@@ -5,17 +5,17 @@ use models::unrecognized_words::{Column as UnrecognizedWordsColumn, ActiveModel 
 use rocket::State;
 use sea_orm::{EntityTrait, DatabaseConnection, ColumnTrait, QueryFilter, DbErr, Set};
 
-enum Presence {
+pub enum Presence {
     AlreadyPresent,
     SuccessfullyAdded
 } use Presence::*;
 
 
-pub async fn insert_unrecognized_if_absent(word: &String, db: &State<DatabaseConnection>) -> Result<Presence, DbErr> {
+pub async fn insert_unrecognized_if_absent(word: &String, db: &DatabaseConnection) -> Result<Presence, DbErr> {
 
     match UnrecognizedWords::find()// Try to find in the table `unrecognized_words`
         .filter(UnrecognizedWordsColumn::Form.eq(word)) // at least one entry that looks like the input word
-        .one(db.inner()) // in the database
+        .one(db) // in the database
         .await { // when you get a resonse
             Err(e) => { Err(e) }, // an error means we couldn't connect, return error result (generally we won't care much)
             Ok(m) => { // an okay means we connected, and got back a result
@@ -28,7 +28,7 @@ pub async fn insert_unrecognized_if_absent(word: &String, db: &State<DatabaseCon
                             ..Default::default()
                         };
                         match UnrecognizedWords::insert(unrecognized_word) // Inserting the model into `unrecognized_words`
-                            .exec(db.inner()) // into the database
+                            .exec(db) // into the database
                             .await { // which will later respond with either:
                                 Ok(m) => Ok(SuccessfullyAdded), // Successfully added
                                 Err(e) => Err(e) // Couldn't add, pass up the error
