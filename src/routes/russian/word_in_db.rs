@@ -5,7 +5,7 @@ use super::models::russian_words::*;
 use super::models::prelude::*;
 
 
-#[get("/in_check/<req>")]
+#[get("/in-check/<req>")]
 pub async fn word_in_db(db: &State<DatabaseConnection> , req: String) -> String {
     
     println!("requested string: {req}");
