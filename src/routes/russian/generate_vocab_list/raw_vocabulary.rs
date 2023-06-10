@@ -9,8 +9,9 @@ use crate::routes::russian::{
         prelude::RussianWords, 
         russian_words::Column as RussianWordsColumn
     }, 
-    utils::in_checks::{insert_unrecognized_if_absent, Presence}};
+    utils::{in_checks::{insert_unrecognized_if_absent, Presence}, stop_words::remove_stop_words}};
 
+// INCOMING REQUEST
 #[derive(Deserialize)]
 pub struct GenerateListRequest {
     input_text: String,
@@ -18,6 +19,7 @@ pub struct GenerateListRequest {
     breadth: String,
 }
 
+// OUTGOING RESPONSES
 #[derive(Serialize)]
 pub struct RawVocabularyList {
     entry_list: Vec<RawVocabEntry>,
@@ -57,7 +59,11 @@ pub async fn list_vocab(db: &State<DatabaseConnection> , list_req: Json<Generate
     };
 
     let clean_text = clean(input_text);
+    dbg!(&clean_text);
     let words = wordify(clean_text);
+    dbg!(&words);
+    let words = remove_stop_words(words);
+    dbg!(&words);
 
     // Dict of > Lemma : Forms[]
     let mut dictionary: HashMap<String, Vec<String>> = HashMap::new();

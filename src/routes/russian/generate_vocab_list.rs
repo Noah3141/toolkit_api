@@ -8,9 +8,6 @@ pub mod verb_trees;
 /* 
 
     
-    let (input_text, breadth, style) = match list_req.into_inner() {
-        GenerateListRequest {input: input_text, breadth, style} => (input_text, breadth, style)
-    };
 
     let mut input_text: String = input_text
         .replace("\n", " ");
