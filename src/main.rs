@@ -13,7 +13,8 @@ use {
 
     routes::{
         basic_conversions::{
-            url_decode::url_decode
+            url_decode::url_decode,
+            wages::{hourly, yearly}
         },
         email::{
             validate_email::validate_email
@@ -62,6 +63,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ])
         .mount("/convert", routes![
             url_decode,
+            hourly,
+            yearly
         ])
         .mount("/clean", routes![
             test,
