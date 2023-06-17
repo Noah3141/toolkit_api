@@ -9,7 +9,7 @@ use crate::routes::russian::{
         prelude::RussianWords, 
         russian_words::Column as RussianWordsColumn
     }, 
-    utils::{in_checks::{insert_unrecognized_if_absent, Presence}, stop_words::remove_stop_words}};
+    utils::{stop_words::remove_stop_words}};
 
 // INCOMING REQUEST
 #[derive(Deserialize)]
@@ -91,14 +91,14 @@ pub async fn list_vocab(db: &State<DatabaseConnection> , list_req: Json<Generate
     match find_result { Ok(f) => {
         for model in f {
             dictionary
-                .entry( model.lemma.clone().expect("presence of lemma") )
+                .entry( model.lemma.clone() )
                 .and_modify(|list| list.push(model.form.clone()))
                 .or_insert(vec![model.form.clone()]);
 
             find_list.push(model.form.clone());
 
             frequency_map
-                .entry( model.lemma.expect("presence of lemma") )
+                .entry( model.lemma )
                 .and_modify(|v| *v += raw_frequency.get(&model.form).expect("presence of count for form in raw_frequency"))
                 .or_insert(*raw_frequency.get(&model.form).expect("presence of count for form in raw_frequency"));
         }
@@ -123,9 +123,9 @@ pub async fn list_vocab(db: &State<DatabaseConnection> , list_req: Json<Generate
 
 
     // collapse frequency map based on lemmas
-    for (lemma, forms) in &dictionary {
+    // for (lemma, forms) in &dictionary {
 
-    }
+    // }
 
 
 

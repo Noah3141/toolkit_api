@@ -1,3 +1,5 @@
+#![feature(round_char_boundary)]
+#![allow(unused)]
 #[macro_use]
 extern crate rocket;
 extern crate rocket_cors;
@@ -21,6 +23,7 @@ use {
         },
         russian::{
             word_in_db::word_in_db,
+            add_form_lemma::scrape_add,
             generate_vocab_list::{
                 raw_vocabulary::list_vocab,
                 verb_pairs::list_pairs,
@@ -52,11 +55,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .attach(cors)
 
         // Mount my handlers upon this base route for access
-        .mount("/russian/", routes![ 
+        .mount("/russian", routes![ 
             word_in_db,
             list_vocab,
             list_pairs,
-            list_trees
+            list_trees,
+            scrape_add,
         ])
         .mount("/email", routes![
             validate_email,
@@ -77,3 +81,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
     
 }
+

@@ -10,8 +10,8 @@ pub struct Model {
     pub id: u64,
     #[sea_orm(column_type = "Text")]
     pub form: String,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub lemma: Option<String>,
+    #[sea_orm(column_type = "Text")]
+    pub lemma: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

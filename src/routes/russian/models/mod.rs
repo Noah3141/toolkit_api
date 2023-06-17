@@ -3,4 +3,3 @@
 pub mod prelude;
 
 pub mod russian_words;
-pub mod unrecognized_words;
