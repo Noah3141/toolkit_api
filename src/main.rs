@@ -1,4 +1,3 @@
-#![feature(round_char_boundary)]
 #![allow(unused)]
 #[macro_use]
 extern crate rocket;
