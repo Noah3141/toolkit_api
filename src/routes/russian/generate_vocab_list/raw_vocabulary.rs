@@ -60,96 +60,73 @@ pub async fn list_vocab(db: &State<DatabaseConnection> , list_req: Json<Generate
 
     let clean_text = clean(input_text);
     //dbg!(&clean_text);
-    let words = wordify(clean_text);
-    //dbg!(&words);
-    let words = remove_stop_words(words);
+    let input_words = wordify(clean_text);
+    //dbg!(&input_words);
+    let input_words = remove_stop_words(input_words);
     //dbg!(&words);
 
     // Dict of > Lemma : Forms[]
     let mut dictionary: HashMap<String, Vec<String>> = HashMap::new();
-    dictionary.reserve(words.len());
-
-    let mut fail_list = String::from("");
-    let mut find_list: Vec<String> = vec![];
+    dictionary.reserve(input_words.len());
 
 
-    let find_result = RussianWords::find()
-        .filter(RussianWordsColumn::Form.is_in(&words))
+    let mut models = match RussianWords::find()
+        .filter(RussianWordsColumn::Form.is_in(&input_words))
         .all(db.inner())
-        .await;
+        .await {
+            Ok(v) => v,
+            Err(dberr) => return Err(Status::InternalServerError)
+        };
+
+    models.sort_by_key(|m| m.form.clone());
+    models.dedup_by_key(|m| m.form.clone());
+    
 
     // Make a map of how many times each FORM occurs in the input text
-    let mut raw_frequency: HashMap<String, u16> = HashMap::new();
-    for word in words {
-        raw_frequency.entry(word).and_modify(|x| *x += 1).or_insert(1);
+    let mut form_frequency: HashMap<String, u16> = HashMap::new();
+    for word in input_words {
+        form_frequency.entry(word).and_modify(|x| *x += 1).or_insert(1);
     };
 
-    let mut frequency_map: HashMap<String, u16> = HashMap::new();
+    let mut lemma_frequency: HashMap<String, u16> = HashMap::new();
 
 
-    // Get all the input words from db, and build a dictionary of lemma:vec<forms>. Make a note of all the forms we were ABLE to find
-    match find_result { Ok(f) => {
-        for model in f {
-            dictionary
-                .entry( model.lemma.clone() )
-                .and_modify(|list| list.push(model.form.clone()))
-                .or_insert(vec![model.form.clone()]);
+    // Get all the input words from db, and build a dictionary of lemma:vec<forms>. 
+    for model in models {
 
-            find_list.push(model.form.clone());
+        // Dictionary is to contain each lemma, paired with all the forms it occurs with
+        dictionary
+            .entry( model.lemma.clone() )
+            .and_modify(|list| list.push(model.form.clone())) // will not duplicate, because we're looping through unique set from db search
+            .or_insert(vec![model.form.clone()]);
 
-            frequency_map
-                .entry( model.lemma )
-                .and_modify(|v| *v += raw_frequency.get(&model.form).expect("presence of count for form in raw_frequency"))
-                .or_insert(*raw_frequency.get(&model.form).expect("presence of count for form in raw_frequency"));
-        }
-    }, 
-    Err(dberr) => return Err(Status::InternalServerError)};
-
+        // Lemma is counted by going form by form (models), and adding up all the form-counts beneath the lemma
+        lemma_frequency
+            .entry( model.lemma )
+            .and_modify(|v| *v += form_frequency[&model.form])
+            .or_insert(form_frequency[&model.form]);
+    }
+    
 
 
-
-    // // Compare what we could find in DB with what we have in the input txt to determine db gaps
-    // 'fill_missing: for form in frequency_map.keys() {
-    //     if !find_list.contains(form) {
-    //         match insert_unrecognized_if_absent(&form, &db.inner()).await {
-    //             Ok(presence) => match presence {
-    //                     Presence::AlreadyPresent => fail_list.push_str(format!("\nUnrecognized: {}", &form).as_str()),
-    //                     Presence::SuccessfullyAdded => fail_list.push_str(format!("\nAdded Unrecognized: {}", &form).as_str())
-    //                 },
-    //             Err(e) => fail_list.push_str(format!("\nCouldn't add form: {}", &form).as_str()),
-    //         }; 
-    //     }
-    // }
-
-
-    // collapse frequency map based on lemmas
-    // for (lemma, forms) in &dictionary {
-
-    // }
-
-
-
-
-
+    // Build the response 
     let mut input_list: Vec<RawVocabEntry> = vec![];
     for (lemma, form_list)  in dictionary {
         
         let perf = None;
         input_list.push( RawVocabEntry { 
-                frequency: *frequency_map.get(&lemma).expect("presence of lemma") ,
+                frequency: *lemma_frequency.get(&lemma).expect("presence of lemma") ,
                 forms: form_list, 
                 lemma: lemma, 
                 perfective: perf 
             } 
         ) 
 
-    } // Loop through dict
-
-
+    } 
 
     let response: RawVocabularyList = RawVocabularyList {
         entry_list: input_list, 
-        metadata: fail_list,
+        metadata: String::from(""),
     };
 
 
