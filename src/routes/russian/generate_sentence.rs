@@ -1,0 +1,1 @@
+pub mod generate_russian_example;

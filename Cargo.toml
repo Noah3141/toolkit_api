@@ -17,6 +17,9 @@ sea-query = "0.28.5"
 urlencoding = "2.1.2"
 dotenvy = "0.15.7"
 
+# OpenAI API
+openai-api-rs = "0.1.8"
+
 # Web Scraping
 error-chain = "0.12.4"
 select = "0.6.0"

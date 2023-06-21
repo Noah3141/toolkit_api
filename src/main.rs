@@ -27,6 +27,9 @@ use {
                 raw_vocabulary::list_vocab,
                 verb_pairs::list_pairs,
                 verb_trees::list_trees,
+            },
+            generate_sentence::{
+                generate_russian_example::gpt_gen_russian_sentence,
             }
         },
         data_cleaning::wordify::{
@@ -42,7 +45,7 @@ use {
 #[rocket::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
-
+    let gpt_key = dotenvy::var("CHATGPT_API_KEY").expect("presence and access to api key");
     let db: DatabaseConnection = match Database::connect(dotenvy::var("DATABASE_URL")?).await {
         Ok(db) => db,
         Err(e) => panic!("Error launching: {e}")
@@ -60,6 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             list_pairs,
             list_trees,
             scrape_add,
+            gpt_gen_russian_sentence,
         ])
         .mount("/email", routes![
             validate_email,
