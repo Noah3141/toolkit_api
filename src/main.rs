@@ -1,7 +1,8 @@
 #![allow(unused)]
+
+use openai_rs::Opts;
 #[macro_use]
 extern crate rocket;
-extern crate rocket_cors;
 
 pub mod routes;
 pub mod security;
@@ -32,14 +33,18 @@ use {
                 generate_russian_example::gpt_gen_russian_sentence,
             }
         },
-        data_cleaning::wordify::{
-            test,
-            delint,
-            wordify_text
-        }   
+        data_cleaning::{
+            wordify::{
+                test,
+                delint,
+                wordify_text
+            },
+            ai_format_fix::{
+                fix_formatting
+            }  
+        }
     }
 };
-
 
 
 #[rocket::main]
@@ -50,11 +55,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(db) => db,
         Err(e) => panic!("Error launching: {e}")
     };
-    let cors = utils::cors::setup_cors();
+
+    let mut client = openai_rs::OpenAIAccount::new(Opts {
+        temperature: 0.2,
+        ..Default::default()
+    }).await.expect("initialization of openai_rs client");
 
     let _rocket = rocket::build()
         .manage(db) // Send db as state to routes
-        .attach(cors)
+        .attach(utils::cors::Cors)
 
         // Mount my handlers upon this base route for access
         .mount("/russian", routes![ 
@@ -77,6 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             test,
             delint,
             wordify_text,
+            fix_formatting
         ])
         .launch()
         .await?;

@@ -3,7 +3,7 @@ use rocket::{State, http::Status, serde::json::Json};
 use openai_api_rs::v1::chat_completion;
 
 #[get("/generate-sentence/<req>")]
-pub async fn gpt_gen_russian_sentence(req: String) -> Result<String, Status> {
+pub fn gpt_gen_russian_sentence(req: String) -> Result<String, Status> {
 
     let lemma = req;
     println!("Request for word: {lemma}");
@@ -11,21 +11,33 @@ pub async fn gpt_gen_russian_sentence(req: String) -> Result<String, Status> {
     use std::env;
     let client = Client::new(env::var("CHATGPT_API_KEY").unwrap().to_string());
 
-    use openai_api_rs::v1::chat_completion::{self, ChatCompletionRequest};
+
     let req = chat_completion::ChatCompletionRequest {
-        model: chat_completion::GPT3_5_TURBO.to_string(),
+        model: openai_api_rs::v1::completion::GPT3_DAVINCI.to_string(),
         messages: vec![chat_completion::ChatCompletionMessage {
             role: chat_completion::MessageRole::user,
-            content: Some(format!("Write me an example Russian sentence that uses the word {lemma}, followed by the English translation in parentheses.")),
+            content: chat_completion::Content::Text(format!("Write me an example Russian sentence that uses the word {lemma}, followed by the English translation in parentheses.")),
             name: None,
-            function_call: None,
         }],
-        functions: None,
-        function_call: None,
+        temperature: None,
+        top_p: None,
+        n: None,
+        response_format: None,
+        stream: None,
+        stop: None,
+        max_tokens: None,
+        presence_penalty: None,
+        frequency_penalty: None,
+        logit_bias: None,
+        user: None,
+        seed: None,
+        tools: None,
+        tool_choice: None
+        
     };
     
     let result = match client.chat_completion(req)
-        .await {
+        {
             Ok(t) => t, 
             Err(e) => {
                 println!("{:?}", e);

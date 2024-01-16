@@ -6,8 +6,7 @@ edition = "2021"
 # sea-orm-cli generate entity -o src/entity -t words --with-serde both
 
 [dependencies]
-rocket = { version = "0.5.0-rc.3", features = ["json",]} # "secrets"
-rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }
+rocket = { version = "0.5.0", features = ["json"]} # "secrets"
 chrono = "0.4.26"
 
 serde = { version = "1.0.160", features = ["derive"] }
@@ -18,7 +17,8 @@ urlencoding = "2.1.2"
 dotenvy = "0.15.7"
 
 # OpenAI API
-openai-api-rs = "0.1.8"
+openai-api-rs = "3.0.1"
+openai_rs = {git = "https://github.com/Noah3141/openai_rs", branch = "main"}
 
 # Web Scraping
 error-chain = "0.12.4"
