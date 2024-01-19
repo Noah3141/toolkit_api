@@ -93,6 +93,7 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
     let end = chrono::Utc::now().timestamp();
     let process_time = end - start;
 
+    println!("GPT: \n{:?}\n", response_lines.clone());
 
     Json(Response {
         lines: response_lines,
