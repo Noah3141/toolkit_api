@@ -14,6 +14,7 @@ pub struct Request {
     /// If provided, only send to GPT this particular portion of each line
     pub expose_indices: Option<ExposeOpts>,
     pub temperature: f32,
+    pub chunk: usize,
 }
 
 #[derive(Deserialize)]
@@ -43,7 +44,7 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
 
     let mut response_lines: Vec<String> = vec![];
 
-    for chunk in request.lines.chunks(1000) {
+    for chunk in request.lines.chunks(request.chunk) {
         let mut lines = String::new();
         for line in chunk {
             let line: String =  match &request.expose_indices {
