@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _rocket = rocket::build()
         .manage(db) // Send db as state to routes
-        .attach(utils::cors::Cors)
+        .attach(utils::cors::setup_cors())
 
         // Mount my handlers upon this base route for access
         .mount("/russian", routes![ 
