@@ -83,7 +83,11 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
                 }
 
             },
-            None => response_lines.push(msg)
+            None => {
+                for line in res_lines {
+                    response_lines.push(line.to_string())
+                }
+            }
             ,
         }
     }
