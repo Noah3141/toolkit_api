@@ -92,6 +92,13 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
         }
     }
 
+    if response_lines.len() != request.lines.len() {
+        return Json(Response {
+            err: Some(format!("Number of lines in response ({}) did not match number in request ({}). Ensure that your prompt induces a newline delimiter between response lines.", response_lines.len(), request.lines.len() )),
+            lines: vec![],
+            process_time: 0,
+        })
+    }
 
     client.cache.clear();
 
