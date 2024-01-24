@@ -42,6 +42,10 @@ use {
             ai_format_fix::{
                 fix_formatting
             }  
+        },
+        ai::{
+            clear_cache::clear_cache,
+            list_to_list::list_to_list
         }
     }
 };
@@ -87,6 +91,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             delint,
             wordify_text,
             fix_formatting
+        ])
+        .mount("/ai", routes![
+            list_to_list,
+            clear_cache
         ])
         .launch()
         .await?;
