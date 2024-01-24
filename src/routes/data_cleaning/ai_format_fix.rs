@@ -100,7 +100,7 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
         })
     }
 
-    client.cache.clear();
+    
 
     let end = chrono::Utc::now().timestamp();
     let process_time = end - start;
