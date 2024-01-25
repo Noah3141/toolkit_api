@@ -35,13 +35,17 @@ pub async fn handle_str_to_str(request: Json<Request>) -> Json<Response> {
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
 
-    let cquery = client.get_completion(
-        format!("
-        {}
+    let cquery = client
+        .get_completion(
+            format!("
+            {}
 
-        {}
-        ", request.prompt, request.text).as_str()
-    ).await.expect("client completion success");
+            {}
+            ", request.prompt, request.text).as_str()
+        )
+        .await
+        .expect("Succesful API repsonse");
+    
 
     let text = cquery.response.choices[0].clone().message.content.unwrap();
 
@@ -51,9 +55,9 @@ pub async fn handle_str_to_str(request: Json<Request>) -> Json<Response> {
     println!("GPT: \n'{}'\n", text);
 
     Json(Response {
-        text: todo!(),
+        text: text,
         process_time,
         err: None,
-        cached: todo!(),
+        cached: cquery.from_cache,
     })
 }
