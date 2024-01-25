@@ -34,8 +34,8 @@ pub struct Response {
 
 
 
-#[post("/string-to-string", format = "json", data = "<request>")]
-pub async fn list_to_list(request: Json<Request>) -> Json<Response> {
+#[post("/list-to-list", format = "json", data = "<request>")]
+pub async fn handle_list_to_list(request: Json<Request>) -> Json<Response> {
     let start = chrono::Utc::now().timestamp();
 
     let mut client = openai_rs::OpenAIAccount::new( Opts {
