@@ -45,7 +45,8 @@ use {
         },
         ai::{
             clear_cache::clear_cache,
-            list_to_list::list_to_list
+            list_to_list::handle_list_to_list,
+            str_to_str::handle_str_to_str
         }
     }
 };
@@ -93,7 +94,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             fix_formatting
         ])
         .mount("/ai", routes![
-            list_to_list,
+            handle_list_to_list,
+            handle_str_to_str,
             clear_cache
         ])
         .launch()
