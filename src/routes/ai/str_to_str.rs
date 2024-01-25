@@ -13,6 +13,7 @@ pub struct Request {
     pub text: String,
     /// If provided, only send to GPT this particular portion of each line
     pub temperature: f32,
+    pub model: GptModel
 }
 
 
@@ -31,6 +32,7 @@ pub async fn handle_str_to_str(request: Json<Request>) -> Json<Response> {
     let start = chrono::Utc::now().timestamp();
 
     let mut client = openai_rs::OpenAIAccount::new( Opts {
+        model: request.model,
         temperature: request.temperature,
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
