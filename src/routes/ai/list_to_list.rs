@@ -4,7 +4,6 @@ use std::borrow::BorrowMut;
 use openai_rs::*;
 use rocket::{serde::json::Json, State};
 use serde::{Deserialize, Serialize};
-
 #[derive(Deserialize)]
 pub struct Request {
     /// What to pair your lines with when sent to GPT
@@ -35,7 +34,7 @@ pub struct Response {
 
 
 #[post("/list-to-list", format = "json", data = "<request>")]
-pub async fn handle_list_to_list(request: Json<Request>) -> Json<Response> {
+pub async fn handle_list_to_list(request: Json<Request>) -> Result<Json<Response>, Json<Response>> {
     let start = chrono::Utc::now().timestamp();
 
     let mut client = openai_rs::OpenAIAccount::new( Opts {
@@ -75,24 +74,33 @@ pub async fn handle_list_to_list(request: Json<Request>) -> Json<Response> {
         }
 
         let msg = cquery.response.choices[0].clone().message.content.expect("msg content");
-        let res_lines: Vec<&str> = msg.split("\n").collect();
 
+        let gpt_lines = serde_json::from_str::<Vec<String>>(msg.as_str())
+            .map_err(|e| { 
+                println!("GPT: \n{:?}\n", response_lines.clone());
+                Json(Response {
+                    err: Some(format!("GPT responded with a value that could not be JSON deserialized.{:#?}", e )),
+                    lines: vec![],
+                    process_time: 0,
+                    cached: false,
+                })
+            })?;
 
         match &request.expose_indices {
             Some(indices) => {
                 let mut i: usize = 0;
                 for line in chunk {
-                    let replacement_snippet = res_lines[i];
+                    let replacement_snippet = &gpt_lines[i];
                     let mut fixed_line = line.clone();
-                    fixed_line.replace_range(indices.start..indices.end, replacement_snippet);
+                    fixed_line.replace_range(indices.start..indices.end, replacement_snippet.as_str());
                     response_lines.push(fixed_line);
                     i += 1;
                 }
 
             },
             None => {
-                for line in res_lines {
-                    response_lines.push(line.to_string())
+                for line in gpt_lines {
+                    response_lines.push(line)
                 }
             }
             ,
@@ -102,12 +110,12 @@ pub async fn handle_list_to_list(request: Json<Request>) -> Json<Response> {
     println!("GPT: \n{:?}\n", response_lines.clone());
 
     if response_lines.len() != request.lines.len() {
-        return Json(Response {
-            err: Some(format!("Number of lines in response ({}) did not match number in request ({}). Ensure that your prompt induces a newline delimiter between response lines.", response_lines.len(), request.lines.len() )),
+        return Err(Json(Response {
+            err: Some(format!("Number of lines in response ({}) did not match number in request ({}).", response_lines.len(), request.lines.len() )),
             lines: vec![],
             process_time: 0,
             cached: false,
-        })
+        }))
     }
 
 
@@ -115,10 +123,10 @@ pub async fn handle_list_to_list(request: Json<Request>) -> Json<Response> {
     let process_time = end - start;
 
 
-    Json(Response {
+    Ok(Json(Response {
         lines: response_lines,
         process_time,
         err: None,
         cached
-    })
+    }))
 }
