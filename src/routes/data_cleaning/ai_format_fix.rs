@@ -92,7 +92,10 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
         }
     }
 
+    println!("GPT: \n{:?}\n", response_lines.clone());
+
     if response_lines.len() != request.lines.len() {
+        client.cache.clear();
         return Json(Response {
             err: Some(format!("Number of lines in response ({}) did not match number in request ({}). Ensure that your prompt induces a newline delimiter between response lines.", response_lines.len(), request.lines.len() )),
             lines: vec![],
@@ -104,8 +107,6 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
 
     let end = chrono::Utc::now().timestamp();
     let process_time = end - start;
-
-    println!("GPT: \n{:?}\n", response_lines.clone());
 
     Json(Response {
         lines: response_lines,

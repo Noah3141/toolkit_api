@@ -3,6 +3,9 @@ use rocket::{State, http::Status, serde::json::Json};
 use openai_api_rs::v1::chat_completion;
 use openai_api_rs::v1::api::Client;
 
+
+// Used by Rubit
+
 #[get("/generate-sentence/<req>")]
 pub fn gpt_gen_russian_sentence(req: String) -> Result<String, Status> {
 
