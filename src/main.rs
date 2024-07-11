@@ -18,9 +18,6 @@ use {
             url_decode::url_decode,
             wages::{hourly, yearly}
         },
-        email::{
-            validate_email::validate_email
-        },
         russian::{
             word_in_db::word_in_db,
             add_form_lemma::scrape_add,
@@ -78,9 +75,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             list_trees,
             scrape_add,
             gpt_gen_russian_sentence,
-        ])
-        .mount("/email", routes![
-            validate_email,
         ])
         .mount("/convert", routes![
             url_decode,
