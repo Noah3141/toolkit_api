@@ -1,9 +1,10 @@
 
-use std::borrow::BorrowMut;
+use std::{borrow::BorrowMut, path::PathBuf};
 
 use openai_rs::*;
 use rocket::{serde::json::Json, State};
 use serde::{Deserialize, Serialize};
+
 #[derive(Deserialize)]
 pub struct Request {
     /// What to pair your lines with when sent to GPT
@@ -37,8 +38,10 @@ pub struct Response {
 pub async fn handle_list_to_list(request: Json<Request>) -> Result<Json<Response>, Json<Response>> {
     let start = chrono::Utc::now().timestamp();
 
-    let mut client = openai_rs::OpenAIAccount::new( Opts {
+    let mut client = openai_rs::OpenAIAccount::new( &Opts {
         temperature: request.temperature,
+        bill_filepath:  PathBuf::from("./routes/ai/client/bill.json"),
+        cache_filepath: PathBuf::from("./routes/ai/client/cache.json"),
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
 

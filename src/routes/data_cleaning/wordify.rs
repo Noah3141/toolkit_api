@@ -1,5 +1,5 @@
 use rocket::serde::json::Json;
-use crate::routes::russian::utils::{input_cleaning::clean, input_parsing::wordify};
+use crate::routes::rubit::utils::{input_cleaning::clean, input_parsing::wordify};
 
 #[post("/delint", format = "json", data = "<text>")]
 pub async fn delint(mut text: Json<String>) -> String {

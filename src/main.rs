@@ -1,5 +1,7 @@
 #![allow(unused)]
 
+use std::path::PathBuf;
+
 use openai_rs::Opts;
 #[macro_use]
 extern crate rocket;
@@ -18,15 +20,13 @@ use {
             url_decode::url_decode,
             wages::{hourly, yearly}
         },
-        russian::{
-            word_in_db::word_in_db,
-            add_form_lemma::scrape_add,
+        rubit::{
             generate_vocab_list::{
                 raw_vocabulary::list_vocab,
                 verb_pairs::list_pairs,
                 verb_trees::list_trees,
             },
-            generate_sentence::{
+            generate_sentence:: {
                 generate_russian_example::gpt_gen_russian_sentence,
             }
         },
@@ -49,6 +49,7 @@ use {
 };
 
 
+
 #[rocket::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
@@ -58,8 +59,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Err(e) => panic!("Error launching: {e}")
     };
 
-    let mut client = openai_rs::OpenAIAccount::new(Opts {
+    let mut client = openai_rs::OpenAIAccount::new( &Opts {
         temperature: 0.2,
+        bill_filepath:  PathBuf::from("./routes/ai/client/bill.json"),
+        cache_filepath: PathBuf::from("./routes/ai/client/cache.json"),
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
 
@@ -69,11 +72,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // Mount my handlers upon this base route for access
         .mount("/russian", routes![ 
-            word_in_db,
             list_vocab,
             list_pairs,
             list_trees,
-            scrape_add,
             gpt_gen_russian_sentence,
         ])
         .mount("/convert", routes![

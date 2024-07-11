@@ -1,0 +1,9 @@
+{
+  "cost": 0.27245,
+  "prompt_tokens": 847,
+  "completion_tokens": 727,
+  "total_tokens": 1574,
+  "query_count": 4,
+  "cache_retrievals": 1,
+  "filepath": "./bill.json"
+}

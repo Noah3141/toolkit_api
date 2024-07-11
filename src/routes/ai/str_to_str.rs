@@ -1,9 +1,10 @@
 
-use std::borrow::BorrowMut;
+use std::{borrow::BorrowMut, path::PathBuf};
 
 use openai_rs::*;
 use rocket::{serde::json::Json, State};
 use serde::{Deserialize, Serialize};
+
 
 #[derive(Deserialize)]
 pub struct Request {
@@ -31,9 +32,11 @@ pub struct Response {
 pub async fn handle_str_to_str(request: Json<Request>) -> Json<Response> {
     let start = chrono::Utc::now().timestamp();
 
-    let mut client = openai_rs::OpenAIAccount::new( Opts {
+    let mut client = openai_rs::OpenAIAccount::new( &Opts {
         model: request.model,
         temperature: request.temperature,
+        bill_filepath:  PathBuf::from("./routes/ai/client/bill.json"),
+        cache_filepath: PathBuf::from("./routes/ai/client/cache.json"),
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
 
