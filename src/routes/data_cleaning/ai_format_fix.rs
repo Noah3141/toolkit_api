@@ -40,8 +40,8 @@ pub async fn fix_formatting(request: Json<Request>) -> Json<Response> {
 
     let mut client = openai_rs::OpenAIAccount::new( &Opts {
         temperature: request.temperature,
-        bill_filepath:  PathBuf::from("./routes/ai/client/bill.json"),
-        cache_filepath: PathBuf::from("./routes/ai/client/cache.json"),
+        bill_filepath:  PathBuf::from("./src/routes/ai/client/bill.json"),
+        cache_filepath: PathBuf::from("./src/routes/ai/client/cache.json"),
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
 

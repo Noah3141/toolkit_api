@@ -20,8 +20,8 @@ pub async fn remove_from_cache(request: Json<Request>) -> Result<Json<Response>,
 
     let key = request.0.cache_key;
     let mut client = openai_rs::OpenAIAccount::new(&Opts {
-        bill_filepath:  PathBuf::from("./routes/ai/client/bill.json"),
-        cache_filepath: PathBuf::from("./routes/ai/client/cache.json"),
+        bill_filepath:  PathBuf::from("./src/routes/ai/client/bill.json"),
+        cache_filepath: PathBuf::from("./src/routes/ai/client/cache.json"),
         ..Default::default()
     }).await.expect("initialization of openai_rs client");
 
