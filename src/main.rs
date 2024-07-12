@@ -3,6 +3,7 @@
 use std::path::PathBuf;
 
 use openai_rs::Opts;
+use rocket::Config;
 #[macro_use]
 extern crate rocket;
 

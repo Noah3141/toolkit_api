@@ -7,11 +7,11 @@ use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 pub fn setup_cors() -> rocket_cors::Cors {
     let allowed_origins = AllowedOrigins::some_exact(&[
-        "https://rubit.vercel.app/"
+        "https://www.russianvocabularylistmaker.com/"
     ]);
 
     // You can also deserialize this
-    let cors = rocket_cors::CorsOptions {
+    rocket_cors::CorsOptions {
         allowed_origins,
         allowed_methods: vec![Method::Get, Method::Post, Method::Options, Method::Delete, Method::Put].into_iter().map(From::from).collect(),
         allowed_headers: AllowedHeaders::All,
@@ -19,7 +19,5 @@ pub fn setup_cors() -> rocket_cors::Cors {
         ..Default::default()
     }
     .to_cors()
-    .unwrap();
-
-    cors
+    .unwrap()
 }
